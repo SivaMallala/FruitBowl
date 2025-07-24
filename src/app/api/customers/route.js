@@ -6,7 +6,6 @@ export async function GET() {
   await dbConnect();
   try {
     const customers = await Customer.find().sort({ startDate: -1 }); // Latest first
-    console.log(customers);
     return NextResponse.json({ customers });
   } catch (error) {
     console.error('Fetch error:', error);

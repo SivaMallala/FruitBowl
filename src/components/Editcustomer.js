@@ -1,14 +1,36 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 
-export default function AddCustomer() {
+export default function EditCustomer({ customerData }) {
+  const router = useRouter();
+
   const [form, setForm] = useState({
     name: '', phoneNumber: '', address: '', planName: '', bowlCount: '',
     startDate: '', dTime: '', SubStatus: '', duration: '', paymentStatus: '',
     orderStatus: '', note: ''
   });
+
+  useEffect(() => {
+    if (customerData) {
+      setForm({
+        name: customerData.name || '',
+        phoneNumber: customerData.phoneNumber || '',
+        address: customerData.address || '',
+        planName: customerData.planName || '',
+        bowlCount: customerData.bowlCount || 0,
+        startDate: customerData.startDate ? customerData.startDate.split('T')[0] : '',
+        dTime: customerData.dTime || '',
+        SubStatus: customerData.SubStatus || '',
+        duration: customerData.duration || '',
+        paymentStatus: customerData.paymentStatus || '',
+        orderStatus: customerData.orderStatus || '',
+        note: customerData.note || '',
+      });
+    }
+  }, [customerData]);
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -16,26 +38,23 @@ export default function AddCustomer() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (form.name.trim() === '') {
       toast.error('Name is required!');
       return;
     }
-    const res = await fetch('/api/customers', {
-      method: 'POST',
+
+    const res = await fetch(`/api/customers/${customerData.cusid}`, {
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...form, bowlCount: Number(form.bowlCount) }),
     });
 
     if (res.ok) {
-      toast.success('Customer added!');
-      setForm({
-        name: '', phoneNumber: '', address: '', planName: '', bowlCount: '',
-        startDate: '', dTime: '', SubStatus: '', duration: '', paymentStatus: '',
-        orderStatus: '', note: ''
-      });
-      window.location.reload();
+      toast.success('Customer updated!');
+      router.push('/'); 
     } else {
-      toast.error('Failed to add');
+      toast.error('Failed to update');
     }
   };
 
@@ -71,7 +90,7 @@ export default function AddCustomer() {
       </div>
 
       <div>
-        <label className="block mb-1 text-sm font-medium">Bowl Count</label>
+        <label className="block mb-1 text-sm font-medium">No. Bowls Remain</label>
         <input name="bowlCount" type="number" value={form.bowlCount} onChange={handleChange} className="w-full p-2 border rounded text-sm" />
       </div>
 
@@ -132,7 +151,7 @@ export default function AddCustomer() {
       </div>
 
       <div className="col-span-full">
-        <Button type="submit" className="w-full bg-green-600 text-white py-2 rounded">Add Customer</Button>
+        <Button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">Update Customer</Button>
       </div>
     </form>
   );

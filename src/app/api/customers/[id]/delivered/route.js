@@ -5,7 +5,7 @@ import Customer from "@/model/Customer";
 
 export async function PUT(request, context) {
   await dbConnect();
-  const { id } = await context.params; // ✅ No need to await context.params
+  const { id } = await context.params;
 
   try {
     const customer = await Customer.findOne({ cusid: id });
@@ -60,4 +60,24 @@ customer.markModified('deliveryDates');
     console.error("Update error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
+}
+
+export async function DELETE(request, context) {
+  await dbConnect();
+  const { id } = await context.params;
+try {
+   const customer = await Customer.findOne({ cusid: id });
+   if (!customer) {
+      return new Response(JSON.stringify({ message: 'Customer not found' }), { status: 404 });
+    }
+
+    await Customer.deleteOne({ cusid: id });
+
+    return new Response(JSON.stringify({ message: 'Customer deleted successfully' }), { status: 200 });
+
+} catch (error) {
+  console.error(error);
+    return new Response(JSON.stringify({ message: 'Internal Server Error' }), { status: 500 });
+}
+
 }

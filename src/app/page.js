@@ -29,6 +29,8 @@ export default function Home() {
             <AddCustomer />
           </DialogContent>
         </Dialog>
+
+        
         <ViewCustomers />
       </div>
     </div>

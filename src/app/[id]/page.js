@@ -1,18 +1,38 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import DeliveryDates from "@/components/DeliveryDates";
+import EditCustomer from "@/components/Editcustomer";
 
 export default function CustomerDetail() {
   const params = useParams();
   const id = params.id;
-
+  const router = useRouter();
   const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+
   const [loadingb, setLoadingb] = useState(false);
 
   useEffect(() => {
@@ -31,6 +51,24 @@ export default function CustomerDetail() {
     if (id) fetchCustomer();
   }, [id]);
 
+  const handleDelete = async () => {
+    try {
+      const res = await fetch(`/api/customers/${customer.cusid}/delivered`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        toast.success("Customer deleted successfully!");
+        router.push("/");
+      } else {
+        toast.error("Failed to delete customer");
+      }
+    } catch (error) {
+      toast.error("An error occurred while deleting");
+      console.error(error);
+    }
+  };
+
   const handleDelivered = async () => {
     setLoadingb(true);
     try {
@@ -42,7 +80,7 @@ export default function CustomerDetail() {
 
       if (res.ok) {
         toast("Delivery updated!");
-        router.refresh(); // or manually update state
+        window.location.reload();
       } else {
         toast(data.error || "Failed to update");
       }
@@ -58,14 +96,64 @@ export default function CustomerDetail() {
 
   return (
     <div className="max-w-3xl flex justify-around  mx-auto px-4 py-8">
-      <Button
-        variant="outline"
-        onClick={handleDelivered}
-        className="bg-green-600 text-white px-4 py-2 rounded-md"
-        disabled={loadingb}
-      >
-        {loadingb ? "Updating..." : "Delivered Today"}
-      </Button>
+      <div className=" flex flex-col gap-7">
+        <Button
+          variant="outline"
+          onClick={handleDelivered}
+          className="bg-green-600 text-white px-4 py-2 h-fit rounded-md"
+          disabled={loadingb}
+        >
+          {loadingb ? "Updating..." : "Delivered Today"}
+        </Button>
+
+        <Dialog>
+          <DialogTrigger asChild>
+            
+             <Button
+              className="bg-blue-700  text-white py-2 h-fit rounded-md "
+              variant="outline"
+            >
+              Edit Customer
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="text-xl mb-2">
+                Edit Customer
+              </DialogTitle>
+              <EditCustomer customerData={JSON.parse(JSON.stringify(customer))} />
+            </DialogHeader>
+           
+          </DialogContent>
+        </Dialog>
+
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              className="bg-red-700 text-white h-fit px-4 py-2 rounded-md"
+              variant="outline"
+            >
+              Delete Customer
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete
+                customer and remove data from servers.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete}>
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+
       <div className="space-y-2">
         <h1 className="text-2xl font-bold mb-6">Customer Details</h1>
         <p>
@@ -116,11 +204,7 @@ export default function CustomerDetail() {
         </p>
       </div>
 
-    <DeliveryDates deliveryDates={customer.deliveryDates || []} />
-
-
-
-
+      <DeliveryDates deliveryDates={customer.deliveryDates || []} />
     </div>
   );
 }
