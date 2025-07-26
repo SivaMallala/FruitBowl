@@ -80,12 +80,15 @@ export default function EditCustomer({ customerData }) {
         <label className="block mb-1 text-sm font-medium">Plan Name</label>
         <select name="planName" value={form.planName} onChange={handleChange} className="w-full p-2 border rounded text-sm">
           <option value="">Select Plan</option>
-          <option value="Basic - 15 days @ 899">Basic - 15 days @ 899</option>
-          <option value="Basic - 30 days @ 1599">Basic - 30 days @ 1599</option>
-          <option value="Standard - 15 days @ 1199">Standard - 15 days @ 1199</option>
-          <option value="Standard - 30 days @ 2099">Standard - 30 days @ 2099</option>
-          <option value="Premium - 15 days @ 1499">Premium - 15 days @ 1499</option>
-          <option value="Premium - 30 days @ 2699">Premium - 30 days @ 2699</option>
+           <option value="Demo Week - 1 Week @ 549">Demo Week - 1 Week @ 549</option>
+          <option value="Basic - Half Month @ 899">Basic - Half Month @ 899</option>
+          <option value="Basic - 1 Month @ 1599">Basic - 1 Month @ 1599</option>
+          <option value="Standard - Half Month @ 1199">Standard - Half Month @ 1199</option>
+          <option value="Standard - 1 Month @ 2099">Standard - 1 Month @ 2099</option>
+          <option value="Premium - Half Month @ 1499">Premium - Half Month @ 1499</option>
+          <option value="Premium - 1 Month @ 2699">Premium - 1 Month @ 2699</option>
+          <option value="Diabetic - Half Month @ 1349">Diabetic - Half Month @ 1349</option>
+          <option value="Diabetic - 1 Month @ 2400">Diabetic - 1 Month @ 2400</option>
         </select>
       </div>
 
@@ -124,6 +127,7 @@ export default function EditCustomer({ customerData }) {
           <option value="">Select Duration</option>
           <option value="Half-Month">Half-Month</option>
           <option value="1 Month">1 Month</option>
+          <option value="1 Week">1 Week</option>
         </select>
       </div>
 
